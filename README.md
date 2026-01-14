@@ -1,101 +1,137 @@
-# Creator Ops Studio 🎨🚀
+# CreatorOps Studio
 
-**Creator Ops Studio** is a comprehensive dashboard designed for content creators to manage their brand deals, track deliverables, and handle payments efficiently. It specifically replaces generic tools like Notion or spreadsheets with a workflow tailored for the creator economy.
+A premium brand deal management platform for content creators. Track deals, manage deliverables, get brand approvals - all in one place.
 
-## ✨ Features
+## 🏗️ Project Structure
 
-*   **Deal Management (Kanban Board)**: Visualize deals across different stages: Confirmed, In Production, Sent for Approval, Posted, Payment Pending, and Paid.
-*   **Deliverable Tracking**: Granular tracking of specific deliverables (e.g., "1 Reel", "2 YT Shorts") within each deal.
-*   **Brand Approval Workflow**: Dedicated "Share with Brand" links that allow external stakeholders to review content without logging in.
-*   **Automated Status Transitions**:
-    *   Sending a deliverable to a brand automatically moves the deal to **"Sent for Approval"**.
-*   **Flexible Workflows**:
-    *   Create drafts without links.
-    *   Inline editing for deliverables.
-    *   Manual status overrides when needed.
-*   **Secure Authentication**: JWT-based authentication for creators.
+```
+Creator Ops Studio/
+├── server/          # Backend (Node.js + Express + MongoDB)
+│   ├── server.js    # Entry point
+│   ├── models/      # Mongoose schemas
+│   ├── routes/      # API routes
+│   ├── middleware/  # Auth middleware
+│   └── .env         # Environment variables
+│
+├── web/             # Frontend (React + Vite + Tailwind)
+│   ├── src/
+│   │   ├── pages/       # React pages
+│   │   ├── components/  # Reusable components
+│   │   ├── store/       # Zustand state
+│   │   └── api/         # Axios config
+│   └── package.json
+│
+├── playground/      # Learning & experimentation files
+└── README.md
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- MongoDB Atlas account (or local MongoDB)
+
+### 1. Clone & Install
+
+```bash
+# Install backend dependencies
+cd server
+npm install
+
+# Install frontend dependencies
+cd ../web
+npm install
+```
+
+### 2. Environment Setup
+
+Create `server/.env`:
+```
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_super_secret_jwt_key
+PORT=5001
+```
+
+### 3. Run the App
+
+**Terminal 1 - Backend:**
+```bash
+cd server
+npm run dev
+```
+
+**Terminal 2 - Frontend:**
+```bash
+cd web
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+## 📱 App Screens
+
+| Screen | Description |
+|--------|-------------|
+| **Dashboard** | Kanban board with all deals |
+| **Deal Page** | 3-column layout: Info, Deliverables, Approvals |
+| **Approval Page** | Brand-facing review page (no login required) |
+| **Auth** | Login & Signup pages |
 
 ## 🛠️ Tech Stack
 
 ### Backend
-*   **Node.js & Express**: Robust REST API.
-*   **MongoDB & Mongoose**: Flexible schema design for Deals and Deliverables.
-*   **JWT (JSON Web Tokens)**: Secure stateless authentication.
-*   **Zod**: Runtime schema validation.
+- **Node.js** + **Express** - REST API
+- **MongoDB** + **Mongoose** - Database
+- **JWT** - Authentication
+- **bcryptjs** - Password hashing
 
 ### Frontend
-*   **React (Vite)**: Fast, modern frontend framework.
-*   **Tailwind CSS**: Utility-first styling for a custom, premium design.
-*   **Zustand**: Lightweight state management.
-*   **Lucide React**: Beautiful, consistent iconography.
-*   **Axios**: HTTP client for API requests.
+- **React 19** - UI framework
+- **Vite** - Build tool
+- **Tailwind CSS** - Styling
+- **Zustand** - State management
+- **React Router** - Routing
+- **Axios** - HTTP client
+- **Lucide React** - Icons
 
-## 🚀 Getting Started
+## 📊 Database Schema
 
-Follow these steps to set up the project locally.
-
-### Prerequisites
-*   Node.js (v18 or higher)
-*   MongoDB (Local or Atlas URI)
-
-### 1. Clone the Repository
-```bash
-git clone <repository-url>
-cd creator-ops-studio
+### User
+```
+{ name, email, password, role }
 ```
 
-### 2. Backend Setup
-Navigate to the root directory and install dependencies:
-```bash
-npm install
+### Deal
+```
+{ userId, brandName, value, dueDate, status, shareToken }
 ```
 
-Create a `.env` file in the root directory:
-```env
-PORT=5001
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
+### Deliverable
+```
+{ dealId, title, link, version, status, comments[] }
 ```
 
-Start the backend server:
-```bash
-node server.js
-```
-The server will run on `http://localhost:5001`.
+## 🔐 API Endpoints
 
-### 3. Frontend Setup
-Open a new terminal, navigate to the client directory, and install dependencies:
-```bash
-cd client
-npm install
-```
+### Auth
+- `POST /api/auth/signup` - Register
+- `POST /api/auth/login` - Login
 
-Start the frontend development server:
-```bash
-npm run dev
-```
-The application will be available at `http://localhost:5173`.
+### Deals (protected)
+- `GET /api/deals` - All user deals
+- `POST /api/deals` - Create deal
+- `GET /api/deals/:id` - Get deal
+- `PATCH /api/deals/:id` - Update deal
+- `DELETE /api/deals/:id` - Delete deal
 
-## 📂 Project Structure
+### Deliverables (protected)
+- `POST /api/deals/:id/deliverables` - Add deliverable
+- `PATCH /api/deliverables/:id` - Update deliverable
 
-```
-creator-ops-studio/
-├── client/                 # React Frontend
-│   ├── src/
-│   │   ├── api/           # Axios setup
-│   │   ├── components/    # Reusable UI components
-│   │   ├── pages/         # Application pages (Dashboard, DealPage, etc.)
-│   │   └── store/         # Zustand store
-│   └── ...
-├── models/                 # Mongoose Models (Deal, Deliverable, User)
-├── routes/                 # Express API Routes
-├── middleware/             # Auth middleware
-├── server.js               # Backend Entry Point
-└── ...
-```
+### Public (brand approval)
+- `GET /api/public/deals/:token` - Get deal by share token
+- `PATCH /api/public/deliverables/:id/status` - Approve/reject
 
-## 🛡️ Security Note
-This project uses `.gitignore` to ensure sensitive files like `.env` and `node_modules` are not committed to the repository. Please ensure you configure your local environment variables correctly before running.
+---
 
-## 📄 License
-[ISC](LICENSE)
+Built with ❤️ for content creators

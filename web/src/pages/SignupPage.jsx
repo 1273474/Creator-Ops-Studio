@@ -26,7 +26,6 @@ const SignupPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setServerError('');
-
         // Frontend Validation
         const validation = signupSchema.safeParse(formData);
         if (!validation.success) {
