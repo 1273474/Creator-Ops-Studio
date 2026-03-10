@@ -10,7 +10,13 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: [
+        'http://localhost:5173',
+        'https://creator-ops-studio.vercel.app'
+    ],
+    credentials: true
+}));
 app.use(helmet());
 
 // Debug Logging
